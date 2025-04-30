@@ -30,7 +30,7 @@ export default async function handler(req, res) {
             .json({ error: `Error running USE commands: ${err.message}` });
         } else {
           // Now run your main query
-          const query = "SELECT * FROM OFFSHORE_WINDMILLS LIMIT 10";
+          const query = "SELECT * FROM OFFSHORE_WINDMILLS LIMIT 1000";
           connection.execute({
             sqlText: query,
             complete: (err, stmt, rows) => {

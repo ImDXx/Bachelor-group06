@@ -13,12 +13,12 @@ export default function Home() {
         <h1 className="text-2xl font-bold mt-4 text-gray-800">Ulstein Service performance under demanding weather conditions</h1>
         <p className="mt-2 text-gray-700">Comparison of serviceability of wind turbines under varying weather conditions</p>
       </div>
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <ServiceMap />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-8">
             <Vessels />
