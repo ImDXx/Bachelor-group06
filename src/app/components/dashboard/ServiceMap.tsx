@@ -55,7 +55,7 @@ export default function ServiceMap() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            
+
             {markers.map((marker) => {
               if (marker.type === 'turbine') {
                 return (
@@ -133,18 +133,16 @@ export default function ServiceMap() {
               {markers.filter(m => m.type !== 'turbine').map(vessel => (
                 <div
                   key={vessel.id}
-                  className={`p-2 rounded cursor-pointer transition-colors ${
-                    selectedMarker === vessel.id
+                  className={`p-2 rounded cursor-pointer transition-colors ${selectedMarker === vessel.id
                       ? 'bg-gray-100 border-2 border-gray-300'
                       : 'hover:bg-gray-50 border border-gray-200'
-                  }`}
+                    }`}
                   onClick={() => handleMarkerClick(vessel.id)}
                 >
                   <div className="flex items-center gap-2">
-                    <div 
-                      className={`w-3 h-3 rounded-full ${
-                        vessel.type === 'ulstein' ? 'bg-blue-500' : 'bg-orange-500'
-                      }`}
+                    <div
+                      className={`w-3 h-3 rounded-full ${vessel.type === 'ulstein' ? 'bg-blue-500' : 'bg-orange-500'
+                        }`}
                     />
                     <span className="text-sm font-medium text-gray-700">{vessel.name}</span>
                   </div>

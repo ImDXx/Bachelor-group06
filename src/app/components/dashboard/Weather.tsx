@@ -43,7 +43,7 @@ export default function Weather() {
         {weatherData.map((weather, index) => (
           <div key={index} className="border rounded p-4">
             <div className="mt-2">
-              <p className="text-sm text-gray-700">Location:</p>
+              <p className="text-sm text-gray-700">Location: Unknown</p> {/* Placeholder for location*/}
               <p className="text-sm text-gray-800">
                 Lat: {weather.LAT.toFixed(2)}
                 <br />
