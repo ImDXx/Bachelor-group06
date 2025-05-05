@@ -18,11 +18,20 @@ export interface WindTurbine {
 }
 
 export interface WeatherData {
-  position: Position;
-  windSpeed: number;  // in m/s
-  waveHeight: number; // in meters
-  beaufortScale: number;
-  temperature: number;
+  TIMESTAMP_UTC: string;
+  LAT: number;
+  LON: number;
+  AIR_TEMPERATURE: number;
+  WIND_SPEED: number;
+  WIND_DIRECTION: number;
+  WAVE_HEIGHT: number;
+  WAVE_DIRECTION: number;
+  CURRENT_SPEED: number;
+  CLOUD_COVER: number;
+  HUMIDITY: number;
+  PRESSURE: number;
+  VISIBILITY: number;
+  SOURCE: string;
 }
 
 export interface ServiceEvent {
