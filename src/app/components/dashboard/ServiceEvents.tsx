@@ -1,5 +1,5 @@
 import { ServiceEvent } from '@/types/data';
-import { mockServiceEvents } from '@/data/mockServiceEvents';
+import { mockServiceEvents } from '../../../../public/data/mockServiceEvents';
 
 export default function ServiceEvents() {
   return (

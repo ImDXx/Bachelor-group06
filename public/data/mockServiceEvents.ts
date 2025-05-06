@@ -1,4 +1,4 @@
-import { ServiceEvent } from '../types/data';
+import { ServiceEvent } from '../../src/types/data';
 
 export const mockServiceEvents: ServiceEvent[] = [
   {

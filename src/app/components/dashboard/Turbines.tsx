@@ -1,5 +1,5 @@
 import { WindTurbine } from '@/types/data';
-import { mockTurbines } from '@/data/mockTurbines';
+import { mockTurbines } from '../../../../public/data/mockTurbines';
 
 export default function Turbines() {
   return (

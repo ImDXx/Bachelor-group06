@@ -1,5 +1,5 @@
 import { Vessel } from '@/types/data';
-import { mockVessels } from '@/data/mockVessels';
+import { mockVessels } from '../../../../public/data/mockVessels';
 
 export default function Vessels() {
   const ulsteinVessels = mockVessels.filter(v => v.id.startsWith('UV'));
@@ -8,7 +8,7 @@ export default function Vessels() {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4 text-gray-800">Service Vessels</h2>
-      
+
       <div className="space-y-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 mb-3">Ulstein Vessels</h3>
