@@ -29,17 +29,29 @@ export default function ServiceMap() {
           throw new Error(`Failed to fetch CSV file: ${response.statusText}`);
         }
         const csvText = await response.text();
-
+  
         Papa.parse(csvText, {
           header: true,
           skipEmptyLines: true,
           complete: (result) => {
-            const turbines = result.data.map((row: any) => ({
-              id: row.id,
-              latitude: parseFloat(row.lat),
-              longitude: parseFloat(row.lon),
-              type: 'turbine' as 'turbine',
-            })) as MarkerInfo[];
+            const groupedTurbines = result.data.reduce((acc: Record<string, { id: string; latitude: number; longitude: number; type: 'turbine' }>, row: any) => {
+              const prefix = row.id.slice(0, 4); // Get the first 4 digits of the ID
+              if (!acc[prefix]) {
+                acc[prefix] = {
+                  id: prefix,
+                  latitude: parseFloat(row.lat),
+                  longitude: parseFloat(row.lon),
+                  type: 'turbine',
+                };
+              } else {
+                // Average the latitude and longitude for turbines with the same prefix
+                acc[prefix].latitude = (acc[prefix].latitude + parseFloat(row.lat)) / 2;
+                acc[prefix].longitude = (acc[prefix].longitude + parseFloat(row.lon)) / 2;
+              }
+              return acc;
+            }, {});
+  
+            const turbines = Object.values(groupedTurbines) as MarkerInfo[];
             setCsvTurbines(turbines);
           },
         });
@@ -47,7 +59,7 @@ export default function ServiceMap() {
         console.error('Error fetching turbine data:', error);
       }
     };
-
+  
     fetchTurbineData();
   }, []);
 
