@@ -86,7 +86,7 @@ export default function ServiceMap() {
         <div className="h-[500px] flex-1">
           <MapContainer
             center={[54.5, 2.3]} // Default center
-            zoom={7}
+            zoom={7} // Default map zoom upon opening
             style={{ height: '100%', width: '100%' }}
             scrollWheelZoom={true}
           >
@@ -97,7 +97,7 @@ export default function ServiceMap() {
 
             {/* Cluster only turbines */}
             <MarkerClusterGroup
-              disableClusteringAtZoom={10} // Adjust the zoom level for clustering
+              disableClusteringAtZoom={10} // Adjust the zoom level for clustering, default the map is zoom 7 when opening the app
               maxClusterRadius={40} // Adjust the maximum cluster radius
             >
               {markers
