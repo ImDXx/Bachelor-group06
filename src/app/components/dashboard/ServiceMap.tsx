@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { mockVessels } from '../../../../public/data/mockVessels';
 import { mockTurbines } from '../../../../public/data/mockTurbines';
@@ -14,12 +14,11 @@ interface MarkerInfo {
   longitude: number;
   atService?: boolean;
   type: 'ulstein' | 'competitor' | 'turbine';
-  count?: number; // Added count property for turbines
 }
 
 export default function ServiceMap() {
+  const [csvTurbines, setCsvTurbines] = useState<MarkerInfo[]>([]); // Store turbines from CSV
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
-  const [csvTurbines, setCsvTurbines] = useState<MarkerInfo[]>([]);
 
   // Fetch and parse the CSV file
   useEffect(() => {
@@ -35,27 +34,14 @@ export default function ServiceMap() {
           header: true,
           skipEmptyLines: true,
           complete: (result) => {
-            const groupedTurbines = result.data.reduce((acc: Record<string, { id: string; latitude: number; longitude: number; type: 'turbine'; count: number }>, row: any) => {
-              const prefix = row.id.slice(0, 4); // Get the first 4 digits of the ID
-              if (!acc[prefix]) {
-                acc[prefix] = {
-                  id: prefix,
-                  latitude: parseFloat(row.lat),
-                  longitude: parseFloat(row.lon),
-                  type: 'turbine',
-                  count: 1, // Initialize count
-                };
-              } else {
-                // Average the latitude and longitude for turbines with the same prefix
-                acc[prefix].latitude = (acc[prefix].latitude * acc[prefix].count + parseFloat(row.lat)) / (acc[prefix].count + 1);
-                acc[prefix].longitude = (acc[prefix].longitude * acc[prefix].count + parseFloat(row.lon)) / (acc[prefix].count + 1);
-                acc[prefix].count += 1; // Increment count
-              }
-              return acc;
-            }, {});
-
-            const turbines = Object.values(groupedTurbines) as MarkerInfo[];
-            setCsvTurbines(turbines);
+            // Parse turbine data
+            const parsedTurbines = result.data.map((row: any) => ({
+              id: row.id,
+              latitude: parseFloat(row.lat),
+              longitude: parseFloat(row.lon),
+              type: 'turbine' as const,
+            })) as MarkerInfo[];
+            setCsvTurbines(parsedTurbines);
           },
         });
       } catch (error) {
@@ -66,8 +52,7 @@ export default function ServiceMap() {
     fetchTurbineData();
   }, []);
 
-
-  // Mock data, remember to remove this section when using real data
+  // Combine mock data and CSV turbines
   const markers: MarkerInfo[] = [
     ...mockVessels.map((vessel) => ({
       id: vessel.id,
@@ -75,17 +60,18 @@ export default function ServiceMap() {
       latitude: vessel.positions[vessel.positions.length - 1].latitude,
       longitude: vessel.positions[vessel.positions.length - 1].longitude,
       atService: vessel.atService,
-      type: vessel.id.startsWith('UV') ? 'ulstein' as 'ulstein' : 'competitor' as 'competitor',
+      type: vessel.id.startsWith('UV') ? 'ulstein' as const : 'competitor' as const,
     })),
     ...mockTurbines.map((turbine) => ({
       id: turbine.id,
       name: turbine.name,
       latitude: turbine.position.latitude,
       longitude: turbine.position.longitude,
-      type: 'turbine' as 'turbine',
+      type: 'turbine' as const,
     })),
     ...csvTurbines.map((turbine) => ({
-      ...turbine, // Include all properties from csvTurbines, including count
+      ...turbine,
+      type: 'turbine' as const,
     })),
   ];
 
@@ -112,17 +98,6 @@ export default function ServiceMap() {
               if (marker.type === 'turbine') {
                 return (
                   <div key={marker.id}>
-                    <Circle
-                      center={[marker.latitude, marker.longitude]}
-                      radius={50}
-                      pathOptions={{
-                        color: '#FFD700',
-                        fillColor: '#FFD700',
-                        fillOpacity: 0.1,
-                        weight: 1,
-                        dashArray: '5, 5',
-                      }}
-                    />
                     <CircleMarker
                       center={[marker.latitude, marker.longitude]}
                       radius={6}
@@ -138,9 +113,6 @@ export default function ServiceMap() {
                       <Popup>
                         <div>
                           <p><strong>Position:</strong> {marker.latitude}, {marker.longitude}</p>
-                          {marker.type === 'turbine' && marker.count && (
-                            <p><strong>Total Turbines:</strong> {marker.count}</p>
-                          )}
                         </div>
                       </Popup>
                     </CircleMarker>
