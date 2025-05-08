@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 import 'leaflet/dist/leaflet.css';
 import { mockVessels } from '../../../../public/data/mockVessels';
 import { mockTurbines } from '../../../../public/data/mockTurbines';
@@ -94,32 +95,40 @@ export default function ServiceMap() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {markers.map((marker) => {
-              if (marker.type === 'turbine') {
-                return (
-                  <div key={marker.id}>
-                    <CircleMarker
-                      center={[marker.latitude, marker.longitude]}
-                      radius={6}
-                      fillColor={selectedMarker === marker.id ? '#FFA500' : '#FFD700'}
-                      color="#000"
-                      weight={selectedMarker === marker.id ? 3 : 1}
-                      opacity={1}
-                      fillOpacity={0.8}
-                      eventHandlers={{
-                        click: () => handleMarkerClick(marker.id),
-                      }}
-                    >
-                      <Popup>
-                        <div>
-                          <p><strong>Position:</strong> {marker.latitude}, {marker.longitude}</p>
-                        </div>
-                      </Popup>
-                    </CircleMarker>
-                  </div>
-                );
-              }
-              return (
+            {/* Cluster only turbines */}
+            <MarkerClusterGroup
+              disableClusteringAtZoom={10} // Adjust the zoom level for clustering
+              maxClusterRadius={40} // Adjust the maximum cluster radius
+            >
+              {markers
+                .filter((marker) => marker.type === 'turbine') // Only include turbines
+                .map((marker) => (
+                  <CircleMarker
+                    key={marker.id}
+                    center={[marker.latitude, marker.longitude]}
+                    radius={6}
+                    fillColor={selectedMarker === marker.id ? '#FFA500' : '#FFD700'}
+                    color="#000"
+                    weight={selectedMarker === marker.id ? 3 : 1}
+                    opacity={1}
+                    fillOpacity={0.8}
+                    eventHandlers={{
+                      click: () => handleMarkerClick(marker.id),
+                    }}
+                  >
+                    <Popup>
+                      <div>
+                        <p><strong>Position:</strong> {marker.latitude}, {marker.longitude}</p>
+                      </div>
+                    </Popup>
+                  </CircleMarker>
+                ))}
+            </MarkerClusterGroup>
+
+            {/* Render non-turbine markers separately */}
+            {markers
+              .filter((marker) => marker.type !== 'turbine') // Exclude turbines
+              .map((marker) => (
                 <CircleMarker
                   key={marker.id}
                   center={[marker.latitude, marker.longitude]}
@@ -143,8 +152,7 @@ export default function ServiceMap() {
                     </div>
                   </Popup>
                 </CircleMarker>
-              );
-            })}
+              ))}
           </MapContainer>
         </div>
 
