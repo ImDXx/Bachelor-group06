@@ -14,6 +14,7 @@ interface MarkerInfo {
   longitude: number;
   atService?: boolean;
   type: 'ulstein' | 'competitor' | 'turbine';
+  count?: number; // Added count property for turbines
 }
 
 export default function ServiceMap() {
@@ -29,12 +30,12 @@ export default function ServiceMap() {
           throw new Error(`Failed to fetch CSV file: ${response.statusText}`);
         }
         const csvText = await response.text();
-  
+
         Papa.parse(csvText, {
           header: true,
           skipEmptyLines: true,
           complete: (result) => {
-            const groupedTurbines = result.data.reduce((acc: Record<string, { id: string; latitude: number; longitude: number; type: 'turbine' }>, row: any) => {
+            const groupedTurbines = result.data.reduce((acc: Record<string, { id: string; latitude: number; longitude: number; type: 'turbine'; count: number }>, row: any) => {
               const prefix = row.id.slice(0, 4); // Get the first 4 digits of the ID
               if (!acc[prefix]) {
                 acc[prefix] = {
@@ -42,15 +43,17 @@ export default function ServiceMap() {
                   latitude: parseFloat(row.lat),
                   longitude: parseFloat(row.lon),
                   type: 'turbine',
+                  count: 1, // Initialize count
                 };
               } else {
                 // Average the latitude and longitude for turbines with the same prefix
-                acc[prefix].latitude = (acc[prefix].latitude + parseFloat(row.lat)) / 2;
-                acc[prefix].longitude = (acc[prefix].longitude + parseFloat(row.lon)) / 2;
+                acc[prefix].latitude = (acc[prefix].latitude * acc[prefix].count + parseFloat(row.lat)) / (acc[prefix].count + 1);
+                acc[prefix].longitude = (acc[prefix].longitude * acc[prefix].count + parseFloat(row.lon)) / (acc[prefix].count + 1);
+                acc[prefix].count += 1; // Increment count
               }
               return acc;
             }, {});
-  
+
             const turbines = Object.values(groupedTurbines) as MarkerInfo[];
             setCsvTurbines(turbines);
           },
@@ -59,10 +62,12 @@ export default function ServiceMap() {
         console.error('Error fetching turbine data:', error);
       }
     };
-  
+
     fetchTurbineData();
   }, []);
 
+
+  // Mock data, remember to remove this section when using real data
   const markers: MarkerInfo[] = [
     ...mockVessels.map((vessel) => ({
       id: vessel.id,
@@ -79,7 +84,9 @@ export default function ServiceMap() {
       longitude: turbine.position.longitude,
       type: 'turbine' as 'turbine',
     })),
-    ...csvTurbines, // Add turbines from the CSV file
+    ...csvTurbines.map((turbine) => ({
+      ...turbine, // Include all properties from csvTurbines, including count
+    })),
   ];
 
   const handleMarkerClick = (markerId: string) => {
@@ -129,11 +136,11 @@ export default function ServiceMap() {
                       }}
                     >
                       <Popup>
-                        <div className="p-2">
-                          <h3 className="font-semibold">Turbine ID: {marker.id}</h3>
-                          <p className="text-sm">
-                            Position: {marker.latitude.toFixed(4)}, {marker.longitude.toFixed(4)}
-                          </p>
+                        <div>
+                          <p><strong>Position:</strong> {marker.latitude}, {marker.longitude}</p>
+                          {marker.type === 'turbine' && marker.count && (
+                            <p><strong>Total Turbines:</strong> {marker.count}</p>
+                          )}
                         </div>
                       </Popup>
                     </CircleMarker>
