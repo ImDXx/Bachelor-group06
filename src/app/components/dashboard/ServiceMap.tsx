@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import 'leaflet/dist/leaflet.css';
@@ -97,7 +98,7 @@ export default function ServiceMap() {
 
             {/* Cluster only turbines */}
             <MarkerClusterGroup
-              disableClusteringAtZoom={10} // Adjust the zoom level for clustering, default the map is zoom 7 when opening the app
+              disableClusteringAtZoom={8} // Adjust the zoom level for clustering, default the map is zoom 7 when opening the app
               maxClusterRadius={40} // Adjust the maximum cluster radius
             >
               {markers
@@ -162,28 +163,28 @@ export default function ServiceMap() {
             <h3 className="font-semibold mb-2 text-gray-800">Vessels</h3>
             <div className="space-y-2">
               {markers.filter((m) => m.type !== 'turbine').map((vessel) => (
-                <div
-                  key={vessel.id}
-                  className={`p-2 rounded cursor-pointer transition-colors ${selectedMarker === vessel.id
-                    ? 'bg-gray-100 border-2 border-gray-300'
-                    : 'hover:bg-gray-50 border border-gray-200'
-                    }`}
-                  onClick={() => handleMarkerClick(vessel.id)}
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-3 h-3 rounded-full ${vessel.type === 'ulstein' ? 'bg-blue-500' : 'bg-orange-500'
-                        }`}
-                    />
-                    <span className="text-sm font-medium text-gray-700">{vessel.name}</span>
+                <Link key={vessel.id} href={`/vessels/${vessel.id}`}>
+                  <div
+                    className={`p-2 rounded cursor-pointer transition-colors ${selectedMarker === vessel.id
+                      ? 'bg-gray-100 border-2 border-gray-300'
+                      : 'hover:bg-gray-50 border border-gray-200'
+                      }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-3 h-3 rounded-full ${vessel.type === 'ulstein' ? 'bg-blue-500' : 'bg-orange-500'
+                          }`}
+                      />
+                      <span className="text-sm font-medium text-gray-700">{vessel.name}</span>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {vessel.latitude.toFixed(4)}, {vessel.longitude.toFixed(4)}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {vessel.atService ? 'At Service' : 'Not At Service'}
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {vessel.latitude.toFixed(4)}, {vessel.longitude.toFixed(4)}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {vessel.atService ? 'At Service' : 'Not At Service'}
-                  </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
