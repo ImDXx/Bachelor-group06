@@ -163,11 +163,11 @@ export default function ServiceMap() {
             <h3 className="font-semibold mb-2 text-gray-800">Vessels</h3>
             <div className="space-y-2">
               {markers.filter((m) => m.type !== 'turbine').map((vessel) => (
-                <Link key={vessel.id} href={`/vessels/${vessel.id}`}>
+                <Link key={vessel.id} href={`/vessels/${vessel.id}`} className="block mb-2">
                   <div
                     className={`p-2 rounded cursor-pointer transition-colors ${selectedMarker === vessel.id
-                      ? 'bg-gray-100 border-2 border-gray-300'
-                      : 'hover:bg-gray-50 border border-gray-200'
+                        ? 'bg-gray-100 border-2 border-gray-300'
+                        : 'hover:bg-gray-50 border border-gray-200'
                       }`}
                   >
                     <div className="flex items-center gap-2">
