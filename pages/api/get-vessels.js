@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
     // Use the configured database and schema
     connection.execute({
-      sqlText: `USE DATABASE ${process.env.SNOWFLAKE_DATABASE};`,
+      sqlText: `USE DATABASE ULSTEINGROUP_DEV_DB; USE SCHEMA featuriz`,
       complete: (err) => {
         if (err) {
           res
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
             .json({ error: `Error running USE commands: ${err.message}` });
         } else {
           // Now run your main query
-          const query = "SELECT * FROM vessels LIMIT 10";
+          const query = "SELECT * FROM FEATURIZ_VESSEL_WEATHER_FEATURES LIMIT 10";
           connection.execute({
             sqlText: query,
             complete: (err, stmt, rows) => {
