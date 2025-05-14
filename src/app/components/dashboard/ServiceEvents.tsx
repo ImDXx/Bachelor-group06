@@ -1,6 +1,9 @@
 import { ServiceEvent } from '@/types/data';
 import { mockServiceEvents } from '../../../../public/data/mockServiceEvents';
 
+
+
+
 export default function ServiceEvents() {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">

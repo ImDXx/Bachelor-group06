@@ -130,13 +130,17 @@ export default function ServiceMap() {
             />
 
             {/* Render Turbines with Clustering */}
-            <MarkerClusterGroup>
+            <MarkerClusterGroup
+              chunkedLoading // Enable chunked loading for better performance.. hopefully
+              maxClusterRadius={50}
+              disableClusteringAtZoom={10} // Disable clustering at zoom 10, default is 7
+            >
               {csvTurbines.map((turbine) => (
                 <CircleMarker
                   key={turbine.id}
                   center={[turbine.latitude, turbine.longitude]}
-                  radius={6} // Fixed size for turbines
-                  fillColor="#FFD700" // Yellow color for turbines
+                  radius={6}
+                  fillColor="#FFD700"
                   color="#000"
                   weight={1}
                   opacity={1}
