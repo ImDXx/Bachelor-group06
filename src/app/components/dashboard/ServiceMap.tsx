@@ -184,6 +184,20 @@ export default function ServiceMap() {
                     <p><strong>Longitude:</strong> {vessel.longitude.toFixed(4)}</p>
                     <p><strong>Speed:</strong> {vessel.speed ? `${vessel.speed} knots` : 'N/A'}</p>
                     <p><strong>Connection Status:</strong> {vessel.connectionStatus || 'N/A'}</p>
+
+                    {/* Display weather data if connectionStatus is "approaching" or "connected" */}
+                    {(vessel.connectionStatus === 'approaching' || vessel.connectionStatus === 'connected') && (
+                      <div className="mt-2">
+                        <h4 className="font-semibold">Weather Information</h4>
+                        <p><strong>Air Temperature:</strong> {vessel.airTemperature ? `${vessel.airTemperature} °C` : 'N/A'}</p>
+                        <p><strong>Current Speed:</strong> {vessel.currentSpeed ? `${vessel.currentSpeed} m/s` : 'N/A'}</p>
+                        <p><strong>Gust:</strong> {vessel.gust ? `${vessel.gust} m/s` : 'N/A'}</p>
+                        <p><strong>Swell Height:</strong> {vessel.swellHeight ? `${vessel.swellHeight} m` : 'N/A'}</p>
+                        <p><strong>Water Temperature:</strong> {vessel.waterTemperature ? `${vessel.waterTemperature} °C` : 'N/A'}</p>
+                        <p><strong>Wave Height:</strong> {vessel.waveHeight ? `${vessel.waveHeight} m` : 'N/A'}</p>
+                        <p><strong>Wind Speed:</strong> {vessel.windSpeed ? `${vessel.windSpeed} m/s` : 'N/A'}</p>
+                      </div>
+                    )}
                   </div>
                 </Popup>
               </CircleMarker>
