@@ -116,7 +116,7 @@ export default function ServiceEvents() {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Service Events</h2>
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Historic Service Events</h2>
 
       <div className="space-y-6">
         {serviceVessels.map((vessel) => (
@@ -126,7 +126,7 @@ export default function ServiceEvents() {
               <p className="text-sm text-gray-700">Latitude: {vessel.latitude.toFixed(4)}</p>
               <p className="text-sm text-gray-700">Longitude: {vessel.longitude.toFixed(4)}</p>
               <p className="text-sm text-gray-700">Speed: {vessel.speed ? `${vessel.speed} knots` : 'N/A'}</p>
-              <p className="text-sm text-gray-700">Connection Status: {vessel.connectionStatus || 'N/A'}</p>
+              <p className="text-sm text-gray-700">Time of service: {vessel.timestamp ? new Date(vessel.timestamp).toLocaleString() : 'N/A'}</p>
             </div>
 
             {/* Service Time on Top Right */}
