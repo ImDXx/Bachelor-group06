@@ -30,27 +30,6 @@ export default function Vessels() {
             ))}
           </div>
         </div>
-
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">Competitor Vessels</h3>
-          <div className="space-y-4">
-            {competitorVessels.map((vessel) => (
-              <div key={vessel.id} className="border rounded p-4 bg-gray-50">
-                <h4 className="font-semibold text-gray-800">{vessel.name}</h4>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-700">Latest Position:</p>
-                  <p className="text-sm text-gray-800">
-                    Lat: {vessel.positions[vessel.positions.length - 1].latitude.toFixed(6)}
-                    <br />
-                    Long: {vessel.positions[vessel.positions.length - 1].longitude.toFixed(6)}
-                    <br />
-                    Time: {new Date(vessel.positions[vessel.positions.length - 1].timestamp).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
