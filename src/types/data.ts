@@ -36,4 +36,21 @@ export interface ServiceEvent {
   endTime: string;
   duration: number; // in minutes
   weatherConditions: WeatherData;
-} 
+}
+
+export interface MarkerInfo {
+  id: string;
+  name?: string;
+  latitude: number;
+  longitude: number;
+  type: 'ulstein' | 'competitor' | 'turbine';
+  speed?: number;
+  connectionStatus?: string;
+  airTemperature?: number;
+  currentSpeed?: number;
+  gust?: number;
+  swellHeight?: number;
+  waterTemperature?: number;
+  waveHeight?: number;
+  windSpeed?: number;
+}

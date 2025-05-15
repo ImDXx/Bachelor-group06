@@ -5,23 +5,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster'; // Import clustering library
 import 'leaflet/dist/leaflet.css';
 import Papa from 'papaparse';
-
-interface MarkerInfo {
-  id: string;
-  name?: string;
-  latitude: number;
-  longitude: number;
-  type: 'ulstein' | 'competitor' | 'turbine';
-  speed?: number;
-  connectionStatus?: string;
-  airTemperature?: number;
-  currentSpeed?: number;
-  gust?: number;
-  swellHeight?: number;
-  waterTemperature?: number;
-  waveHeight?: number;
-  windSpeed?: number;
-}
+import { MarkerInfo } from '@/types/data';
 
 export default function ServiceMap() {
   const [csvTurbines, setCsvTurbines] = useState<MarkerInfo[]>([]); // Store turbines from CSV
@@ -64,7 +48,7 @@ export default function ServiceMap() {
   useEffect(() => {
     const fetchVesselData = async () => {
       try {
-        const response = await fetch('/data/ulstein_vessels.csv'); // Ensure the file is in the public/data folder
+        const response = await fetch('/data/vessels.csv'); // Ensure the file is in the public/data folder
         if (!response.ok) {
           throw new Error(`Failed to fetch vessel CSV file: ${response.statusText}`);
         }
@@ -74,23 +58,37 @@ export default function ServiceMap() {
           header: true,
           skipEmptyLines: true,
           complete: (result) => {
-            const parsedVessels = result.data.map((row: any) => ({
-              id: `${row.IMO}-${row.TIMESTAMP}`, // Combine IMO and TIMESTAMP to create a unique ID
-              name: `Vessel ${row.IMO}`,
-              latitude: parseFloat(row.LATITUDE),
-              longitude: parseFloat(row.LONGITUDE),
-              speed: row.SPEED ? parseFloat(row.SPEED) : undefined,
-              connectionStatus: row.CONNECTION_STATUS,
-              airTemperature: row.AIRTEMPERATURE ? parseFloat(row.AIRTEMPERATURE) : undefined,
-              currentSpeed: row.CURRENTSPEED ? parseFloat(row.CURRENTSPEED) : undefined,
-              gust: row.GUST ? parseFloat(row.GUST) : undefined,
-              swellHeight: row.SWELLHEIGHT ? parseFloat(row.SWELLHEIGHT) : undefined,
-              waterTemperature: row.WATERTEMPERATURE ? parseFloat(row.WATERTEMPERATURE) : undefined,
-              waveHeight: row.WAVEHEIGHT ? parseFloat(row.WAVEHEIGHT) : undefined,
-              windSpeed: row.WINDSPEED ? parseFloat(row.WINDSPEED) : undefined,
-              type: 'ulstein' as const,
-            }));
-            setVessels(parsedVessels);
+            // Group data by IMO and keep only the latest entry for each vessel
+            const groupedVessels = result.data.reduce((acc: Record<string, any>, row: any) => {
+              const imo = row.IMO;
+              const timestamp = new Date(row.TIMESTAMP).getTime();
+
+              if (!acc[imo] || acc[imo].timestamp < timestamp) {
+                acc[imo] = {
+                  id: imo,
+                  name: `Vessel ${imo}`,
+                  latitude: parseFloat(row.LATITUDE),
+                  longitude: parseFloat(row.LONGITUDE),
+                  speed: row.SPEED ? parseFloat(row.SPEED) : undefined,
+                  connectionStatus: row.CONNECTION_STATUS,
+                  airTemperature: row.AIRTEMPERATURE ? parseFloat(row.AIRTEMPERATURE) : undefined,
+                  currentSpeed: row.CURRENTSPEED ? parseFloat(row.CURRENTSPEED) : undefined,
+                  gust: row.GUST ? parseFloat(row.GUST) : undefined,
+                  swellHeight: row.SWELLHEIGHT ? parseFloat(row.SWELLHEIGHT) : undefined,
+                  waterTemperature: row.WATERTEMPERATURE ? parseFloat(row.WATERTEMPERATURE) : undefined,
+                  waveHeight: row.WAVEHEIGHT ? parseFloat(row.WAVEHEIGHT) : undefined,
+                  windSpeed: row.WINDSPEED ? parseFloat(row.WINDSPEED) : undefined,
+                  type: 'ulstein', // 
+                  timestamp, // Store the timestamp for comparison
+                };
+              }
+
+              return acc;
+            }, {});
+
+            // Convert grouped data back to an array
+            const latestVessels = Object.values(groupedVessels);
+            setVessels(latestVessels);
           },
         });
       } catch (error) {
@@ -188,20 +186,6 @@ export default function ServiceMap() {
                     <p><strong>Longitude:</strong> {vessel.longitude.toFixed(4)}</p>
                     <p><strong>Speed:</strong> {vessel.speed ? `${vessel.speed} knots` : 'N/A'}</p>
                     <p><strong>Connection Status:</strong> {vessel.connectionStatus || 'N/A'}</p>
-
-                    {/* Display weather data if connectionStatus is "approaching" or "connected" */}
-                    {(vessel.connectionStatus === 'approaching' || vessel.connectionStatus === 'connected') && (
-                      <div className="mt-2">
-                        <h4 className="font-semibold">Weather Information</h4>
-                        <p><strong>Air Temperature:</strong> {vessel.airTemperature ? `${vessel.airTemperature} °C` : 'N/A'}</p>
-                        <p><strong>Current Speed:</strong> {vessel.currentSpeed ? `${vessel.currentSpeed} m/s` : 'N/A'}</p>
-                        <p><strong>Gust:</strong> {vessel.gust ? `${vessel.gust} m/s` : 'N/A'}</p>
-                        <p><strong>Swell Height:</strong> {vessel.swellHeight ? `${vessel.swellHeight} m` : 'N/A'}</p>
-                        <p><strong>Water Temperature:</strong> {vessel.waterTemperature ? `${vessel.waterTemperature} °C` : 'N/A'}</p>
-                        <p><strong>Wave Height:</strong> {vessel.waveHeight ? `${vessel.waveHeight} m` : 'N/A'}</p>
-                        <p><strong>Wind Speed:</strong> {vessel.windSpeed ? `${vessel.windSpeed} m/s` : 'N/A'}</p>
-                      </div>
-                    )}
                   </div>
                 </Popup>
               </CircleMarker>
