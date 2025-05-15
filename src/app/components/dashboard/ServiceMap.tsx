@@ -1,17 +1,21 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, Pane } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster'; // Import clustering library
 import 'leaflet/dist/leaflet.css';
 import Papa from 'papaparse';
 import { MarkerInfo } from '@/types/data';
+import { haversineDistance } from '@/utils/distance'; // Import the haversineDistance function
 
 export default function ServiceMap() {
   const [csvTurbines, setCsvTurbines] = useState<MarkerInfo[]>([]); // Store turbines from CSV
   const [vessels, setVessels] = useState<MarkerInfo[]>([]); // Store vessels from CSV
+  const [filteredTurbines, setFilteredTurbines] = useState<MarkerInfo[]>([]); // Store turbines close to vessels
   const [selectedMarker, setSelectedMarker] = useState<MarkerInfo | null>(null); // Store the selected marker
   const markerRefs = useRef<Map<string, any>>(new Map()); // Store refs for all markers
+
+  const PROXIMITY_THRESHOLD = 25; // Distance in kilometers to consider turbines close to vessels
 
   // Fetch and parse the turbine CSV file
   useEffect(() => {
@@ -99,6 +103,16 @@ export default function ServiceMap() {
     fetchVesselData();
   }, []);
 
+  // Filter turbines based on proximity to vessels
+  useEffect(() => {
+    if (vessels.length > 0 && csvTurbines.length > 0) {
+      const nearbyTurbines = csvTurbines.filter((turbine) =>
+        vessels.some((vessel) => haversineDistance(turbine, vessel) <= PROXIMITY_THRESHOLD)
+      );
+      setFilteredTurbines(nearbyTurbines);
+    }
+  }, [vessels, csvTurbines]);
+
   const handleMarkerClick = (vessel: MarkerInfo) => {
     setSelectedMarker(vessel); // Set the selected vessel
   };
@@ -122,6 +136,10 @@ export default function ServiceMap() {
             style={{ height: '100%', width: '100%' }}
             scrollWheelZoom={true}
           >
+            {/* Map Layers */}
+            <Pane name="turbinePane" style={{ zIndex: 400 }} />
+            <Pane name="vesselPane" style={{ zIndex: 500 }} />
+
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -129,11 +147,11 @@ export default function ServiceMap() {
 
             {/* Render Turbines with Clustering */}
             <MarkerClusterGroup
-              chunkedLoading // Enable chunked loading for better performance.. hopefully
-              maxClusterRadius={50}
-              disableClusteringAtZoom={10} // Disable clustering at zoom 10, default is 7
+              chunkedLoading // Enable chunked loading for better performance
+              maxClusterRadius={50} // Adjust clustering radius
+              disableClusteringAtZoom={10} // Disable clustering at zoom level 10
             >
-              {csvTurbines.map((turbine) => (
+              {filteredTurbines.map((turbine) => (
                 <CircleMarker
                   key={turbine.id}
                   center={[turbine.latitude, turbine.longitude]}
@@ -143,8 +161,9 @@ export default function ServiceMap() {
                   weight={1}
                   opacity={1}
                   fillOpacity={0.8}
+                  pane="turbinePane" // Use the turbine pane
                   eventHandlers={{
-                    click: () => setSelectedMarker(turbine), // Highlight turbine on click
+                    click: () => setSelectedMarker(turbine),
                   }}
                 >
                   <Popup>
@@ -169,6 +188,7 @@ export default function ServiceMap() {
                 weight={1}
                 opacity={1}
                 fillOpacity={0.8}
+                pane="vesselPane" // Use the vessel pane
                 eventHandlers={{
                   click: () => handleMarkerClick(vessel),
                 }}
