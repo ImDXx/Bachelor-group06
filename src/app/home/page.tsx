@@ -31,9 +31,6 @@ export default function Home() {
             <Suspense fallback={<div>Loading Vessels...</div>}>
               <Vessels />
             </Suspense>
-            <Suspense fallback={<div>Loading Turbines...</div>}>
-              <Turbines />
-            </Suspense>
           </div>
           <div className="space-y-8">
             <Suspense fallback={<div>Loading Service Events...</div>}>
