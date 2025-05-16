@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import Papa from 'papaparse';
 import { MarkerInfo } from '@/types/data';
 import { haversineDistance } from '@/utils/distance'; // Import the haversineDistance function
+import L from 'leaflet';
 
 // Dynamically import map components with no SSR
 const MapContainer = dynamic(
@@ -14,6 +15,10 @@ const MapContainer = dynamic(
 );
 const TileLayer = dynamic(
   () => import('react-leaflet').then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+const Marker = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Marker),
   { ssr: false }
 );
 const CircleMarker = dynamic(
@@ -34,6 +39,21 @@ const MarkerClusterGroup = dynamic(
   () => import('react-leaflet-markercluster').then(mod => mod.default),
   { ssr: false }
 ) as any;
+
+// Create custom boat icons
+const boatIcon = L.divIcon({
+  html: `<div style="font-size: 24px;">🛥️</div>`,
+  className: 'boat-icon',
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});
+// Increasing the icon size when selected
+const selectedBoatIcon = L.divIcon({
+  html: `<div style="font-size: 32px;">🛥️</div>`,
+  className: 'boat-icon selected',
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
+});
 
 export default function ServiceMap() {
   const [csvTurbines, setCsvTurbines] = useState<MarkerInfo[]>([]); // Store turbines from CSV
@@ -219,22 +239,16 @@ export default function ServiceMap() {
 
             {/* Render Vessels */}
             {vessels.map((vessel) => (
-              <CircleMarker
+              <Marker
                 key={vessel.id}
-                center={[vessel.latitude, vessel.longitude]}
-                radius={selectedMarker?.id === vessel.id ? 10 : 6} // Highlight selected marker
-                fillColor={selectedMarker?.id === vessel.id ? '#FF0000' : '#3B82F6'} // Change color for selected marker
-                color="#000"
-                weight={1}
-                opacity={1}
-                fillOpacity={0.8}
-                pane="vesselPane" // Use the vessel pane
+                position={[vessel.latitude, vessel.longitude]}
+                icon={selectedMarker?.id === vessel.id ? selectedBoatIcon : boatIcon}
                 eventHandlers={{
                   click: () => handleMarkerClick(vessel),
                 }}
                 ref={(ref) => {
                   if (ref) {
-                    markerRefs.current.set(vessel.id, ref); // Store the marker ref
+                    markerRefs.current.set(vessel.id, ref);
                   }
                 }}
               >
@@ -248,7 +262,7 @@ export default function ServiceMap() {
                     <p><strong>Connection Status:</strong> {vessel.connectionStatus || 'N/A'}</p>
                   </div>
                 </Popup>
-              </CircleMarker>
+              </Marker>
             ))}
           </MapContainer>
         </div>
@@ -290,12 +304,8 @@ export default function ServiceMap() {
       {/* Legend */}
       <div className="mt-4 flex items-center justify-center space-x-6">
         <div className="flex items-center">
-          <div className="w-4 h-4 bg-blue-500 rounded-full mr-2" />
+          <div className="flex items-center justify-center w-6 h-6 mr-2">🛥️</div>
           <span className="text-sm text-gray-700">Ulstein Vessels</span>
-        </div>
-        <div className="flex items-center">
-          <div className="w-4 h-4 bg-orange-500 rounded-full mr-2" />
-          <span className="text-sm text-gray-700">Competitor Vessels</span>
         </div>
         <div className="flex items-center">
           <div className="w-4 h-4 bg-yellow-400 rounded-full mr-2" />
