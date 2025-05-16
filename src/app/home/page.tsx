@@ -1,10 +1,24 @@
-import { lazy, Suspense } from "react";
+'use client';
+
+import dynamic from 'next/dynamic';
+import { Suspense } from "react";
 import Navbar from "../components/Navbar";
 
-const Vessels = lazy(() => import("../components/dashboard/Vessels"));
-const Turbines = lazy(() => import("../components/dashboard/Turbines"));
-const ServiceEvents = lazy(() => import("../components/dashboard/ServiceEvents"));
-const ServiceMap = lazy(() => import("../components/dashboard/ServiceMap"));
+// Use dynamic imports with ssr: false for components that need browser APIs
+const ServiceMap = dynamic(() => import("../components/dashboard/ServiceMap"), {
+  ssr: false,
+  loading: () => <div className="h-[500px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">Loading Map...</div>
+});
+
+const Vessels = dynamic(() => import("../components/dashboard/Vessels"), {
+  ssr: false,
+  loading: () => <div className="h-[200px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">Loading Vessels...</div>
+});
+
+const ServiceEvents = dynamic(() => import("../components/dashboard/ServiceEvents"), {
+  ssr: false,
+  loading: () => <div className="h-[200px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">Loading Service Events...</div>
+});
 
 export default function Home() {
   return (
@@ -20,22 +34,16 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Suspense fallback={<div>Loading Map...</div>}>
-          <div className="mb-8">
-            <ServiceMap />
-          </div>
-        </Suspense>
+        <div className="mb-8">
+          <ServiceMap />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-8">
-            <Suspense fallback={<div>Loading Vessels...</div>}>
-              <Vessels />
-            </Suspense>
+            <Vessels />
           </div>
           <div className="space-y-8">
-            <Suspense fallback={<div>Loading Service Events...</div>}>
-              <ServiceEvents />
-            </Suspense>
+            <ServiceEvents />
           </div>
         </div>
       </div>

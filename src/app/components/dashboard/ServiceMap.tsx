@@ -1,21 +1,53 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, Pane } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-markercluster'; // Import clustering library
+import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 import Papa from 'papaparse';
 import { MarkerInfo } from '@/types/data';
 import { haversineDistance } from '@/utils/distance'; // Import the haversineDistance function
+
+// Dynamically import map components with no SSR
+const MapContainer = dynamic(
+  () => import('react-leaflet').then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+const TileLayer = dynamic(
+  () => import('react-leaflet').then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+const CircleMarker = dynamic(
+  () => import('react-leaflet').then((mod) => mod.CircleMarker),
+  { ssr: false }
+);
+const Popup = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Popup),
+  { ssr: false }
+);
+const Pane = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Pane),
+  { ssr: false }
+);
+
+// Dynamically import MarkerClusterGroup
+const MarkerClusterGroup = dynamic(
+  () => import('react-leaflet-markercluster').then(mod => mod.default),
+  { ssr: false }
+) as any;
 
 export default function ServiceMap() {
   const [csvTurbines, setCsvTurbines] = useState<MarkerInfo[]>([]); // Store turbines from CSV
   const [vessels, setVessels] = useState<MarkerInfo[]>([]); // Store vessels from CSV
   const [filteredTurbines, setFilteredTurbines] = useState<MarkerInfo[]>([]); // Store turbines close to vessels
   const [selectedMarker, setSelectedMarker] = useState<MarkerInfo | null>(null); // Store the selected marker
+  const [mapLoaded, setMapLoaded] = useState(false);
   const markerRefs = useRef<Map<string, any>>(new Map()); // Store refs for all markers
 
   const PROXIMITY_THRESHOLD = 25; // Distance in kilometers to consider turbines close to vessels
+
+  useEffect(() => {
+    setMapLoaded(true);
+  }, []);
 
   // Fetch and parse the turbine CSV file
   useEffect(() => {
@@ -124,6 +156,14 @@ export default function ServiceMap() {
       markerRef.openPopup(); // Programmatically open the popup
     }
   };
+
+  if (!mapLoaded) {
+    return (
+      <div className="h-[500px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
+        Loading Map...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">

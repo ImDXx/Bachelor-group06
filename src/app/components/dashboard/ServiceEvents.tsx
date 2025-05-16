@@ -96,18 +96,23 @@ export default function ServiceEvents() {
 
   // Function to determine the color for the Beaufort scale
   const getBeaufortColor = (beaufortScale: number) => {
-    if (beaufortScale >= 1 && beaufortScale <= 5) {
-      // Transition from light blue (hsl(200, 100%, 70%)) to green (hsl(120, 100%, 50%))
-      const hue = 200 - (beaufortScale - 1) * 20; // Decrease hue from 200 to 120
-      const lightness = 70 - (beaufortScale - 1) * 4; // Decrease lightness from 70% to 50%
-      return `hsl(${hue}, 100%, ${lightness}%)`;
-    } else if (beaufortScale >= 6 && beaufortScale <= 12) {
-      // Transition from yellow (hsl(60, 100%, 50%)) to strong red (hsl(0, 100%, 40%))
-      const hue = 60 - (beaufortScale - 6) * 10; // Decrease hue from 60 to 0
-      const lightness = 50 - (beaufortScale - 6) * 2; // Decrease lightness from 50% to 40%
-      return `hsl(${hue}, 100%, ${lightness}%)`;
-    }
-    return 'gray'; // Default color for invalid or 0
+    const beaufortColors = {
+      0: '#e6ecef',
+      1: '#b3f1eb',
+      2: '#aaf3c7',
+      3: '#8ef190',
+      4: '#8fec4b',
+      5: '#b1ec46',
+      6: '#daec46',
+      7: '#ebce46',
+      8: '#eca847',
+      9: '#eb8646',
+      10: '#ec7146',
+      11: '#eb5647',
+      12: '#da4a60'
+    };
+
+    return beaufortColors[beaufortScale as keyof typeof beaufortColors] || '#e6ecef';
   };
 
   return (
