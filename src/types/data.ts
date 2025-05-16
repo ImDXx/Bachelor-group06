@@ -7,8 +7,9 @@ export interface Position {
 export interface Vessel {
   id: string;
   name: string;
-  positions: Position[];
-  atService: boolean;
+  latitude: number;
+  longitude: number;
+  timestamp: number;
 }
 
 export interface WindTurbine {
@@ -53,4 +54,25 @@ export interface MarkerInfo {
   waterTemperature?: number;
   waveHeight?: number;
   windSpeed?: number;
+}
+
+export interface serVessel {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  speed?: number;
+  connectionStatus?: string;
+  timestamp: number;
+  weatherConditions: {
+    windSpeed: number;
+    waveHeight: number;
+    beaufortScale: number;
+    airTemperature: number; // Updated to match the CSV field
+    currentSpeed: number;
+    gust: number;
+    swellHeight: number;
+    waterTemperature: number;
+  };
+  serviceTime?: string; // Add service time to each vessel
 }

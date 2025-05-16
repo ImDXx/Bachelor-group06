@@ -1,31 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { serVessel } from '@/types/data';
 import Papa from 'papaparse';
 
-interface Vessel {
-  id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  speed?: number;
-  connectionStatus?: string;
-  timestamp: number;
-  weatherConditions: {
-    windSpeed: number;
-    waveHeight: number;
-    beaufortScale: number;
-    airTemperature: number; // Updated to match the CSV field
-    currentSpeed: number;
-    gust: number;
-    swellHeight: number;
-    waterTemperature: number;
-  };
-  serviceTime?: string; // Add service time to each vessel
-}
-
 export default function ServiceEvents() {
-  const [serviceVessels, setServiceVessels] = useState<Vessel[]>([]);
+  const [serviceVessels, setServiceVessels] = useState<serVessel[]>([]);
 
   // Fetch and parse the vessel CSV file
   useEffect(() => {
@@ -53,16 +33,16 @@ export default function ServiceEvents() {
                 windSpeed: row.WINDSPEED ? parseFloat(row.WINDSPEED) : 0,
                 waveHeight: row.WAVEHEIGHT ? parseFloat(row.WAVEHEIGHT) : 0,
                 beaufortScale: row.BEAUFORT_SCALE ? parseInt(row.BEAUFORT_SCALE, 10) : 0,
-                airTemperature: row.AIRTEMPERATURE ? parseFloat(row.AIRTEMPERATURE) : 0, // Corrected field
+                airTemperature: row.AIRTEMPERATURE ? parseFloat(row.AIRTEMPERATURE) : 0,
                 currentSpeed: row.CURRENTSPEED ? parseFloat(row.CURRENTSPEED) : 0,
                 gust: row.GUST ? parseFloat(row.GUST) : 0,
                 swellHeight: row.SWELLHEIGHT ? parseFloat(row.SWELLHEIGHT) : 0,
                 waterTemperature: row.WATERTEMPERATURE ? parseFloat(row.WATERTEMPERATURE) : 0,
               },
-            })) as Vessel[];
+            })) as serVessel[];
 
             // Group vessels by ID
-            const groupedVessels = parsedVessels.reduce((acc: Record<string, Vessel[]>, vessel) => {
+            const groupedVessels = parsedVessels.reduce((acc: Record<string, serVessel[]>, vessel) => {
               if (!acc[vessel.id]) {
                 acc[vessel.id] = [];
               }
@@ -114,6 +94,22 @@ export default function ServiceEvents() {
     fetchVesselData();
   }, []);
 
+  // Function to determine the color for the Beaufort scale
+  const getBeaufortColor = (beaufortScale: number) => {
+    if (beaufortScale >= 1 && beaufortScale <= 5) {
+      // Transition from light blue (hsl(200, 100%, 70%)) to green (hsl(120, 100%, 50%))
+      const hue = 200 - (beaufortScale - 1) * 20; // Decrease hue from 200 to 120
+      const lightness = 70 - (beaufortScale - 1) * 4; // Decrease lightness from 70% to 50%
+      return `hsl(${hue}, 100%, ${lightness}%)`;
+    } else if (beaufortScale >= 6 && beaufortScale <= 12) {
+      // Transition from yellow (hsl(60, 100%, 50%)) to strong red (hsl(0, 100%, 40%))
+      const hue = 60 - (beaufortScale - 6) * 10; // Decrease hue from 60 to 0
+      const lightness = 50 - (beaufortScale - 6) * 2; // Decrease lightness from 50% to 40%
+      return `hsl(${hue}, 100%, ${lightness}%)`;
+    }
+    return 'gray'; // Default color for invalid or 0
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4 text-gray-800">Historic Service Events</h2>
@@ -146,7 +142,12 @@ export default function ServiceEvents() {
               </div>
               <div>
                 <p className="text-sm text-gray-700">Beaufort Scale</p>
-                <p className="text-lg font-semibold text-gray-800">{vessel.weatherConditions.beaufortScale}</p>
+                <p
+                  className="text-lg font-semibold"
+                  style={{ color: getBeaufortColor(vessel.weatherConditions.beaufortScale) }}
+                >
+                  {vessel.weatherConditions.beaufortScale}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-700">Air Temperature</p>

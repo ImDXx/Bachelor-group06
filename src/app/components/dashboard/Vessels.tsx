@@ -1,29 +1,76 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Vessel } from '@/types/data';
-import { mockVessels } from '../../../../public/data/mockVessels';
+import Papa from 'papaparse';
+
 
 export default function Vessels() {
-  const ulsteinVessels = mockVessels.filter(v => v.id.startsWith('UV'));
-  const competitorVessels = mockVessels.filter(v => v.id.startsWith('CV'));
+  const [vessels, setVessels] = useState<Vessel[]>([]); // Renamed to "vessels" since all are Ulstein vessels
+
+  // Fetch and parse the vessel CSV file
+  useEffect(() => {
+    const fetchVesselData = async () => {
+      try {
+        const response = await fetch('/data/vessels.csv'); // Ensure the file is in the public/data folder
+        if (!response.ok) {
+          throw new Error(`Failed to fetch vessel CSV file: ${response.statusText}`);
+        }
+        const csvText = await response.text();
+
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (result) => {
+            const parsedVessels = result.data.map((row: any) => ({
+              id: row.IMO,
+              name: `Vessel ${row.IMO}`,
+              latitude: parseFloat(row.LATITUDE),
+              longitude: parseFloat(row.LONGITUDE),
+              timestamp: new Date(row.TIMESTAMP).getTime(),
+            })) as Vessel[];
+
+            // Get the latest entry for each vessel
+            const latestVessels = Object.values(
+              parsedVessels.reduce((acc: Record<string, Vessel>, vessel) => {
+                if (!acc[vessel.id] || vessel.timestamp > acc[vessel.id].timestamp) {
+                  acc[vessel.id] = vessel;
+                }
+                return acc;
+              }, {})
+            );
+
+            setVessels(latestVessels); // Directly set the latest vessels
+          },
+        });
+      } catch (error) {
+        console.error('Error fetching vessel data:', error);
+      }
+    };
+
+    fetchVesselData();
+  }, []);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4 text-gray-800">Service Vessels</h2>
 
       <div className="space-y-6">
+        {/* Display Vessels */}
         <div>
           <h3 className="text-lg font-semibold text-gray-800 mb-3">Ulstein Vessels</h3>
           <div className="space-y-4">
-            {ulsteinVessels.map((vessel) => (
+            {vessels.map((vessel) => (
               <div key={vessel.id} className="border rounded p-4 bg-blue-50">
                 <h4 className="font-semibold text-gray-800">{vessel.name}</h4>
                 <div className="mt-2">
                   <p className="text-sm text-gray-700">Latest Position:</p>
                   <p className="text-sm text-gray-800">
-                    Lat: {vessel.positions[vessel.positions.length - 1].latitude.toFixed(6)}
+                    Lat: {vessel.latitude.toFixed(6)}
                     <br />
-                    Long: {vessel.positions[vessel.positions.length - 1].longitude.toFixed(6)}
+                    Long: {vessel.longitude.toFixed(6)}
                     <br />
-                    Time: {new Date(vessel.positions[vessel.positions.length - 1].timestamp).toLocaleString()}
+                    Time: {new Date(vessel.timestamp).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -33,4 +80,4 @@ export default function Vessels() {
       </div>
     </div>
   );
-} 
+}
