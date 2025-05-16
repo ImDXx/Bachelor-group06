@@ -285,10 +285,12 @@ const VesselComparison: React.FC = () => {
                                     ))}
                                 </tr>
                                 <tr className="border-b hover:bg-gray-50">
-                                    <td className="px-4 py-3 font-bold">Connection Status</td>
+                                    <td className="px-4 py-3 font-bold">Service Status</td>
                                     {selectedVessels.map((vessel) => (
-                                        <td key={vessel.vesselId} className="px-4 py-3 capitalize">
-                                            {vessel.connectionStatus}
+                                        <td key={vessel.vesselId} className="px-4 py-3">
+                                            <span className="text-green-600 font-medium">
+                                                Service Complete
+                                            </span>
                                         </td>
                                     ))}
                                 </tr>

@@ -119,6 +119,37 @@ export default function ServiceEvents() {
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4 text-gray-800">Historic Service Events</h2>
 
+      {/* Highest Beaufort Scale Section */}
+      {serviceVessels.length > 0 && (
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">Highest Beaufort Scale Registered</h3>
+          {(() => {
+            const highestBeaufort = Math.max(
+              ...serviceVessels.map(vessel => vessel.weatherConditions.beaufortScale)
+            );
+            const vesselWithHighest = serviceVessels.find(
+              vessel => vessel.weatherConditions.beaufortScale === highestBeaufort
+            );
+            return (
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm text-gray-700">Vessel: {vesselWithHighest?.name}</p>
+                  <p className="text-sm text-gray-700">
+                    Time: {vesselWithHighest ? new Date(vesselWithHighest.timestamp).toLocaleString() : 'N/A'}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-3xl font-bold" style={{ color: getBeaufortColor(highestBeaufort) }}>
+                    {highestBeaufort}
+                  </p>
+                  <p className="text-sm text-gray-700">Beaufort Scale</p>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
       <div className="space-y-6">
         {serviceVessels.map((vessel) => (
           <div key={vessel.id} className="p-4 border rounded-lg shadow-sm relative">
