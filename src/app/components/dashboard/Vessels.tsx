@@ -1,14 +1,37 @@
 'use client';
 
+/**
+ * Vessels.tsx
+ * 
+ * A React component that displays a list of vessels with their latest entry
+ * 
+ * Key Features:
+ * - Filters to show only latest entry for each vessel
+ * - Displays information including:
+ *   - Vessel name
+ *   - Latitude and longitude
+ *   - Timestamp of the latest entry
+ *
+ */
 import { useState, useEffect } from 'react';
 import { Vessel } from '@/types/data';
 import Papa from 'papaparse';
 
-
+/**
+ * Vessels Component
+ * Displays a list of vessels with their latest entry
+ * 
+ * @returns {JSX.Element} Rendered vessels dashboard
+ */
 export default function Vessels() {
   const [vessels, setVessels] = useState<Vessel[]>([]); // Renamed to "vessels" since all are Ulstein vessels
 
-  // Fetch and parse the vessel CSV file
+  /**
+   * Effect: Load and process vessel data
+   * - Fetches vessel data from CSV
+   * - Processes to keep only latest entry for each vessel
+   * - Updates state with filtered vessel data
+   */
   useEffect(() => {
     const fetchVesselData = async () => {
       try {
@@ -18,6 +41,7 @@ export default function Vessels() {
         }
         const csvText = await response.text();
 
+        // Parse CSV data
         Papa.parse(csvText, {
           header: true,
           skipEmptyLines: true,
