@@ -1,18 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This project is a web dashboard for visualizing and comparing vessels performing service operations on offshore wind turbines. It features an interactive map that allows for interactions with vessels and wind turbines. 
+Built with [Next.js](https://nextjs.org/) and [React](https://react.dev/), the project features a modern UI and interactive components.
 
 ## Getting Started
+### Prerequisites
 
-First, run the development server:
+Make sure you have node installed
+
+Download link: https://nodejs.org/en
+
+To Verify if you have node run:
+
+```bash
+npm -v
+```
+
+### Installation
+1. Clone the repository:
+
+2. Install required dependencies:
+```bash
+npm -install
+```
+
+3. Run the project locally:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Learn More
 
