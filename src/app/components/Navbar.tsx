@@ -21,6 +21,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
+              {/* Also  "Home" */}
               <Link href="/" className="text-xl font-bold text-gray-800">
                 Ulstein Dashboard
               </Link>
