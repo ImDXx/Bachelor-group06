@@ -1,13 +1,40 @@
 'use client';
 
+/**
+ * ServiceEvents.tsx
+ * 
+ * A React component that displays historical service events for vessels.
+ * Processes CSV data to show service operations and their associated weather conditions.
+ * 
+ * Key Features:
+ * - Displays historical service events for vessels
+ * - Calculates and show service duration for each vessel
+ * - Shows weather conditions at the time of service
+ * - Highlights highest recorded beaufort scale reading for vessels that has done a service
+ * 
+ * 
+ */
+
 import { useState, useEffect } from 'react';
 import { serVessel } from '@/types/data';
 import Papa from 'papaparse';
 
+
+/**
+ * ServiceEvents Component
+ * Displays historical service operations and their weather conditions
+ * @returns {JSX.Element} Rendered service events dashboard
+ */
 export default function ServiceEvents() {
   const [serviceVessels, setServiceVessels] = useState<serVessel[]>([]);
 
-  // Fetch and parse the vessel CSV file
+  /**
+   * Effect: Load and process vessel data
+   * - Fetches CSV data
+   * - Processes service events (Vessels with both "connected" and "disconnected" entries)
+   * - Calculates service duration
+   * - Combines weather data from "connected" state for the vessel.
+   */
   useEffect(() => {
     const fetchVesselData = async () => {
       try {
@@ -94,7 +121,11 @@ export default function ServiceEvents() {
     fetchVesselData();
   }, []);
 
-  // Function to determine the color for the Beaufort scale
+  /**
+   * Determines the color for a given Beaufort scale value
+   * @param beaufortScale - The Beaufort scale value to color
+   * @returns The color code for the Beaufort scale value
+   */
   const getBeaufortColor = (beaufortScale: number) => {
     const beaufortColors = {
       0: '#e6ecef',
@@ -150,6 +181,7 @@ export default function ServiceEvents() {
         </div>
       )}
 
+      {/* Service Events List Cards */}
       <div className="space-y-6">
         {serviceVessels.map((vessel) => (
           <div key={vessel.id} className="p-4 border rounded-lg shadow-sm relative">
