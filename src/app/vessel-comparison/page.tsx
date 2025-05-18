@@ -1,7 +1,20 @@
 'use client';
-
+/**
+ * VesselComparisonPage.tsx
+ * 
+ * The main page for vessel comparison feature
+ * Serves as a landing page for the vessel comparison functionality,
+ * providing layout and navigation structure.
+ * 
+ * Page Structure:
+ * - Navigation bar
+ * - Page title and description
+ * - VesselComparison component
+ * 
+ */
 import Navbar from "../components/Navbar";
 import VesselComparison from "../components/VesselComparison";
+
 
 export default function VesselComparisonPage() {
     return (

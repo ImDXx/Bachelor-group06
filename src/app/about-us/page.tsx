@@ -1,3 +1,11 @@
+/**
+ * AboutUsPage.tsx
+ * 
+ * A React component that displays an about us page
+ * 
+ * 
+ */
+
 import Navbar from "../components/Navbar";
 
 export default function AboutUsPage() {

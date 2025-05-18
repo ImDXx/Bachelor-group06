@@ -1,3 +1,17 @@
+/**
+ * Navbar.tsx
+ * 
+ * A responsive navigation component that provides as the main navigation component
+ * for the application.
+ * 
+ * Navigation Link:
+ * - Home (/)
+ * - Vessel Comparison (/vessel-comparison)
+ * - About Us (/about-us)
+ * 
+ * 
+ */
+
 import Link from "next/link";
 
 const Navbar = () => {
@@ -11,6 +25,8 @@ const Navbar = () => {
                 Ulstein Dashboard
               </Link>
             </div>
+
+            {/* Navigation Links */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link href="/"
                 className="inline-flex items-center px-1 pt-1 text-gray-500 hover:text-gray-700">

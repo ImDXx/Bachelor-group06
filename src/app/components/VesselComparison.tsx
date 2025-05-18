@@ -1,19 +1,28 @@
+'use client';
+
+/**
+ * VesselComparison.tsx
+ * 
+ * A client-side React component for comparing between different vessel services
+ * Allows user to compare performance metrics and weather conditions between vessels
+ * 
+ * Features:
+ * - Interactive comparison of up to TWO vessels
+ * - Service time tracking and comparison
+ * - Ability to mark a service vessel as a potential competitor
+ * 
+ */
+
 import React, { useState, useEffect } from 'react';
+import { ServiceData } from '@/types/data';
 import Papa from 'papaparse';
 
-interface ServiceData {
-    vesselId: string;
-    vesselName: string;
-    beaufortScale: number;
-    serviceTime: string;
-    waveHeight: number;
-    windSpeed: number;
-    connectionStatus: string;
-    type: 'ulstein' | 'competitor';
-    timeUsed: string;
-    isCompetitor: boolean;
-}
-
+/**
+ * Get Beaufort description for a given scale value
+ * 
+ * @param scale - Beaufort scale value (0-12)
+ * @returns Description of Beaufort scale
+ */
 const getBeaufortDescription = (scale: number): string => {
     const descriptions = {
         0: 'Calm',
@@ -33,6 +42,20 @@ const getBeaufortDescription = (scale: number): string => {
     return descriptions[scale as keyof typeof descriptions] || 'Unknown';
 };
 
+/**
+ * VesselComparison Component
+ * 
+ * Manages the comparison of vessel services
+ * 
+ * State Management:
+ * - availableVessels: List of all vessels with a service data
+ * - selectedVessels: Currently selected vessels for comparison (max 2)
+ * 
+ * Data Processing:
+ * - Loads vessel data from CSV
+ * - Calculates service duration
+ * - Processes weather conditions
+ */
 const VesselComparison: React.FC = () => {
     const [availableVessels, setAvailableVessels] = useState<ServiceData[]>([]);
     const [selectedVessels, setSelectedVessels] = useState<ServiceData[]>([]);
@@ -107,7 +130,7 @@ const VesselComparison: React.FC = () => {
                     serviceTime = `${hours}h ${minutes}m`;
                 }
 
-                // Use weather data from the connected entry, as that's when it's available
+                // Use weather data from the connected entry
                 return {
                     vesselId,
                     vesselName: `Vessel ${vesselId}`,
