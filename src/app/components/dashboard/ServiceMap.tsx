@@ -1,5 +1,18 @@
 'use client';
 
+/**
+ * ServiceMap.tsx
+ * 
+ * A React component that displays a map of wind turbines and vessels.
+ * Uses Leaflet for map rendering and includes features for vessel tracking and turbine proximity.
+ * 
+ * Features:
+ * - Displays vessel positions as markers.
+ * - Shows nearby turbines within a preset proximity threshold.
+ * - Filters turbines based on proximity to vessels.
+ * - Shows vessel information onClick.
+ */
+
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
@@ -8,7 +21,10 @@ import { MarkerInfo } from '@/types/data';
 import { haversineDistance } from '@/utils/distance'; // Import the haversineDistance function
 import L from 'leaflet';
 
-// Dynamically import map components with no SSR
+/**
+ * Dynamic imports for Leaflet-based components to avoid SSR errors.
+ * Leaflet relies on 'window' which isn't available in SSR.
+ */
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
   { ssr: false }
@@ -34,13 +50,15 @@ const Pane = dynamic(
   { ssr: false }
 );
 
-// Dynamically import MarkerClusterGroup
 const MarkerClusterGroup = dynamic(
   () => import('react-leaflet-markercluster').then(mod => mod.default),
   { ssr: false }
 ) as any;
 
-// Create custom boat icons
+/**
+ * Custom icon for vessels
+ * Using boat emoji with different sizes for selected and unselected vessels on the map
+ */
 const boatIcon = L.divIcon({
   html: `<div style="font-size: 24px;">🛥️</div>`,
   className: 'boat-icon',
@@ -55,6 +73,10 @@ const selectedBoatIcon = L.divIcon({
   iconAnchor: [16, 16],
 });
 
+/**
+ * ServiceMap component
+ * @returns {JSX.Element} The rendered map component
+ */
 export default function ServiceMap() {
   const [csvTurbines, setCsvTurbines] = useState<MarkerInfo[]>([]); // Store turbines from CSV
   const [vessels, setVessels] = useState<MarkerInfo[]>([]); // Store vessels from CSV
@@ -63,13 +85,18 @@ export default function ServiceMap() {
   const [mapLoaded, setMapLoaded] = useState(false);
   const markerRefs = useRef<Map<string, any>>(new Map()); // Store refs for all markers
 
-  const PROXIMITY_THRESHOLD = 25; // Distance in kilometers to consider turbines close to vessels
+  const PROXIMITY_THRESHOLD = 25; // Distance threshold in kilometers
+
+
 
   useEffect(() => {
     setMapLoaded(true);
   }, []);
 
-  // Fetch and parse the turbine CSV file
+  /**
+   * Effect: Load turbine data from CSV
+   * Fetches and parses turbine position data
+   */
   useEffect(() => {
     const fetchTurbineData = async () => {
       try {
@@ -100,7 +127,10 @@ export default function ServiceMap() {
     fetchTurbineData();
   }, []);
 
-  // Fetch and parse the vessel CSV file
+  /**
+   * Effect: Load vessel data from CSV
+   * Fetches and parses vessel data, keeping only the latest entry for each vessel
+   */
   useEffect(() => {
     const fetchVesselData = async () => {
       try {
@@ -155,7 +185,10 @@ export default function ServiceMap() {
     fetchVesselData();
   }, []);
 
-  // Filter turbines based on proximity to vessels
+  /**
+   * Effect: Filter turbines based on proximity to vessels
+   * Uses haversineDistance to determine which turbines are within the set proximity threshold
+   */
   useEffect(() => {
     if (vessels.length > 0 && csvTurbines.length > 0) {
       const nearbyTurbines = csvTurbines.filter((turbine) =>
@@ -165,15 +198,23 @@ export default function ServiceMap() {
     }
   }, [vessels, csvTurbines]);
 
+  /**
+   * Handles click events on vessel markers
+   * @param {MarkerInfo} vessel - The vessel marker clicked
+   */
   const handleMarkerClick = (vessel: MarkerInfo) => {
     setSelectedMarker(vessel); // Set the selected vessel
   };
 
+  /**
+   * Handles clicking on a vessel in the sidebar list
+   * @param vessel - The vessel that was clicked in the list
+   */
   const handleListClick = (vessel: MarkerInfo) => {
     setSelectedMarker(vessel); // Highlight the marker
     const markerRef = markerRefs.current.get(vessel.id);
     if (markerRef) {
-      markerRef.openPopup(); // Programmatically open the popup
+      markerRef.openPopup();
     }
   };
 
@@ -209,7 +250,7 @@ export default function ServiceMap() {
             <MarkerClusterGroup
               chunkedLoading // Enable chunked loading for better performance
               maxClusterRadius={50} // Adjust clustering radius
-              disableClusteringAtZoom={10} // Disable clustering at zoom level 10
+              disableClusteringAtZoom={10} // Disable clustering at zoom level 10, default map is at 7
             >
               {filteredTurbines.map((turbine) => (
                 <CircleMarker
@@ -267,7 +308,7 @@ export default function ServiceMap() {
           </MapContainer>
         </div>
 
-        {/* Vessel List */}
+        {/* Vessel sidebar List */}
         <div className="w-64 flex flex-col gap-6">
           <div>
             <h3 className="font-semibold mb-2 text-gray-800">Vessels</h3>

@@ -1,6 +1,6 @@
 /**
  * Calculates the great-circle distance between two points on the Earth's surface
- * using the Haversine formula. This formula accounts for the Earth's curvature.
+ * using the Haversine formula. This formula accounts for the Earth's curvature. -Haversine formula
  *
  * @param {Object} point1 - The first point with latitude and longitude.
  * @param {number} point1.latitude - Latitude of the first point in degrees.
