@@ -1,3 +1,16 @@
+/**
+ * data.ts
+ * 
+ * Type definitions for the Ulstein Dashboard application
+ * Contains interfaces for various data structures used throughout the application:
+ * - Position: Basic geographical coordinates with timestamp
+ * - Vessel: Vessel information including position and identification
+ * - MarkerInfo: Map marker data for vessels and turbines
+ * - serVessel: Detailed vessel information including weather conditions
+ * - ServiceData: Service operation metrics and vessel performance data
+ */
+
+
 export interface Position {
   latitude: number;
   longitude: number;
@@ -10,33 +23,6 @@ export interface Vessel {
   latitude: number;
   longitude: number;
   timestamp: number;
-}
-
-export interface WindTurbine {
-  id: string;
-  name: string;
-  position: Position;
-}
-
-export interface WeatherData {
-  position: {
-    latitude: number;
-    longitude: number;
-    timestamp: string;
-  };
-  windSpeed: number;
-  waveHeight: number;
-  beaufortScale: number;
-  temperature: number;
-}
-
-export interface ServiceEvent {
-  vesselId: string;
-  turbineId: string;
-  startTime: string;
-  endTime: string;
-  duration: number; // in minutes
-  weatherConditions: WeatherData;
 }
 
 export interface MarkerInfo {
@@ -68,11 +54,24 @@ export interface serVessel {
     windSpeed: number;
     waveHeight: number;
     beaufortScale: number;
-    airTemperature: number; // Updated to match the CSV field
+    airTemperature: number;
     currentSpeed: number;
     gust: number;
     swellHeight: number;
     waterTemperature: number;
   };
-  serviceTime?: string; // Add service time to each vessel
+  serviceTime?: string;
+}
+
+export interface ServiceData {
+  vesselId: string;
+  vesselName: string;
+  beaufortScale: number;
+  serviceTime: string;
+  waveHeight: number;
+  windSpeed: number;
+  connectionStatus: string;
+  type: 'ulstein' | 'competitor';
+  timeUsed: string;
+  isCompetitor: boolean;
 }

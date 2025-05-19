@@ -100,7 +100,7 @@ export default function ServiceMap() {
   useEffect(() => {
     const fetchTurbineData = async () => {
       try {
-        const response = await fetch('/data/turbine_position.csv'); // Ensure the file is in the public/data folder
+        const response = await fetch('/data/turbine_position.csv');
         if (!response.ok) {
           throw new Error(`Failed to fetch turbine CSV file: ${response.statusText}`);
         }
@@ -134,7 +134,7 @@ export default function ServiceMap() {
   useEffect(() => {
     const fetchVesselData = async () => {
       try {
-        const response = await fetch('/data/vessels.csv'); // Ensure the file is in the public/data folder
+        const response = await fetch('/data/vessels.csv');
         if (!response.ok) {
           throw new Error(`Failed to fetch vessel CSV file: ${response.statusText}`);
         }

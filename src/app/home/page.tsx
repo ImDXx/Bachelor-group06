@@ -54,10 +54,10 @@ export default function Home() {
       <div className="text-center">
         <Navbar />
         <h1 className="text-2xl font-bold mt-4 text-gray-800">
-          Ulstein Service performance under demanding weather conditions
+          Ulstein Vessel Performance in Adverse Weather
         </h1>
         <p className="mt-2 text-gray-700">
-          Comparison of serviceability of wind turbines under varying weather conditions
+          Turbine Serviceability Across Weather Conditions
         </p>
       </div>
 
