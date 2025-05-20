@@ -35,7 +35,7 @@ export default function Vessels() {
   useEffect(() => {
     const fetchVesselData = async () => {
       try {
-        const response = await fetch('/data/vessels.csv'); // Ensure the file is in the public/data folder
+        const response = await fetch('/data/vessels.csv');
         if (!response.ok) {
           throw new Error(`Failed to fetch vessel CSV file: ${response.statusText}`);
         }
