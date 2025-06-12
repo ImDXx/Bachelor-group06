@@ -1,0 +1,12 @@
+[out:json][timeout:180];
+
+// Wind turbines inlcuding floating and offshore
+(
+  node["power"="generator"]["generator:source"="wind"]["floating"="yes"];
+  node["power"="generator"]["generator:source"="wind"]["offshore"="yes"];
+  way["power"="generator"]["generator:source"="wind"]["floating"="yes"];
+  way["power"="generator"]["generator:source"="wind"]["offshore"="yes"];
+  relation["power"="generator"]["generator:source"="wind"]["floating"="yes"];
+  relation["power"="generator"]["generator:source"="wind"]["offshore"="yes"];
+);
+out center;
